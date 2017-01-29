@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="MySQL - mediatomb@localhost" uuid="5c0533ce-63c9-42ea-b200-78ec5a5b59c5">
+    <database-info product="MySQL" version="5.5.5-10.1.20-MariaDB-1~jessie" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+      <extra-name-characters>#@</extra-name-characters>
+      <identifier-quote-string>`</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact"/>
+    <schema name="" catalog="mediatomb"/>
+    <table name="mt_autoscan" schema="" catalog="mediatomb" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="obj_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="scan_level" sqlType="ENUM" precision="6" scale="0" nullable="false" jdbcType="1"/>
+      <column name="scan_mode" sqlType="ENUM" precision="7" scale="0" nullable="false" jdbcType="1"/>
+      <column name="recursive" sqlType="TINYINT UNSIGNED" precision="3" scale="0" nullable="false" jdbcType="-6"/>
+      <column name="hidden" sqlType="TINYINT UNSIGNED" precision="3" scale="0" nullable="false" jdbcType="-6"/>
+      <column name="interval" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="last_modified" sqlType="BIGINT UNSIGNED" precision="20" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="persistent" sqlType="TINYINT UNSIGNED" precision="3" scale="0" nullable="false" jdbcType="-6" def="MA=="/>
+      <column name="location" sqlType="BLOB" precision="65535" scale="0" nullable="true" jdbcType="-4"/>
+      <column name="path_ids" sqlType="BLOB" precision="65535" scale="0" nullable="true" jdbcType="-4"/>
+      <column name="touched" sqlType="TINYINT UNSIGNED" precision="3" scale="0" nullable="false" jdbcType="-6" def="MQ=="/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <index name="mt_autoscan_obj_id" unique="true" columns="obj_id"/>
+    </table>
+    <table name="mt_cds_active_item" schema="" catalog="mediatomb" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="action" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="state" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="mt_cds_object" schema="" catalog="mediatomb" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="ref_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="parent_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
+      <column name="object_type" sqlType="TINYINT UNSIGNED" precision="3" scale="0" nullable="false" jdbcType="-6"/>
+      <column name="upnp_class" sqlType="VARCHAR" precision="80" scale="0" nullable="true" jdbcType="12"/>
+      <column name="dc_title" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="location" sqlType="BLOB" precision="65535" scale="0" nullable="true" jdbcType="-4"/>
+      <column name="location_hash" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="metadata" sqlType="BLOB" precision="65535" scale="0" nullable="true" jdbcType="-4"/>
+      <column name="auxdata" sqlType="BLOB" precision="65535" scale="0" nullable="true" jdbcType="-4"/>
+      <column name="resources" sqlType="BLOB" precision="65535" scale="0" nullable="true" jdbcType="-4"/>
+      <column name="update_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
+      <column name="mime_type" sqlType="VARCHAR" precision="40" scale="0" nullable="true" jdbcType="12"/>
+      <column name="flags" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="false" jdbcType="4" def="MQ=="/>
+      <column name="track_number" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="service_id" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <index name="cds_object_object_type" unique="false" columns="object_type"/>
+      <index name="cds_object_parent_id" unique="false" columns="parent_id,object_type,dc_title"/>
+      <index name="cds_object_ref_id" unique="false" columns="ref_id"/>
+      <index name="cds_object_service_id" unique="false" columns="service_id"/>
+      <index name="cds_object_track_number" unique="false" columns="track_number"/>
+      <index name="location_parent" unique="false" columns="location_hash,parent_id"/>
+    </table>
+    <table name="mt_internal_setting" schema="" catalog="mediatomb" type="TABLE">
+      <column name="key" sqlType="VARCHAR" precision="40" scale="0" nullable="false" jdbcType="12"/>
+      <column name="value" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="key"/>
+    </table>
+  </data-source>
+</component>
