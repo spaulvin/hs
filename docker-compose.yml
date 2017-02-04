@@ -67,3 +67,14 @@ services:
     image: php:fpm-alpine
     volumes:
       - ./nginx:/usr/share/nginx/html
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Europe/Kiev
+
+  transmission:
+    build: docker/transmission
+    volumes:
+      - ./etc/transmission-daemon/settings.json:/etc/transmission-daemon/settings.json
+    volumes_from:
+      - mediatomb
+    network_mode: host

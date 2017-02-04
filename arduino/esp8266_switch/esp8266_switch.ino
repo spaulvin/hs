@@ -9,8 +9,7 @@
    TX - RX
    RX - TX
 
-
-
+   Последующие прошивки можно выполнять через OTA
 
 */
 
@@ -20,6 +19,11 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
+
+//For OTA
+#include <ESP8266mDNS.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 
 #include "images.h"
 
@@ -35,12 +39,12 @@ const int RELAY = 16;
 
 SSD1306  display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
 
-ESP8266WebServer server(80);
+#define MAX_SRV_CLIENTS 1
+WiFiServer server(23);
+WiFiClient serverClients[MAX_SRV_CLIENTS];
 
 void setup() {
   Serial.begin(115200);
-  Serial.println();
-  Serial.println();
 
   pinMode(RELAY, OUTPUT);
   digitalWrite(RELAY, HIGH);
@@ -58,59 +62,121 @@ void setup() {
     display.display();
   }
 
-  server.on("/on", []() {
-    digitalWrite(RELAY, LOW);
-    server.send(200, "text/html", "<a href='/off'>OFF</a>");
-
+  ArduinoOTA.begin();
+  ArduinoOTA.onStart([]() {
     display.clear();
-    display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
+    display.setFont(ArialMT_Plain_10);
+    display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+    display.drawString(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2 - 10, "OTA Update");
     display.display();
   });
 
-  server.on("/off", []() {
-    digitalWrite(RELAY, HIGH);
-    server.send(200, "text/html", "<a href='/on'>ON</a>");
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    display.drawProgressBar(4, 32, 120, 8, progress / (total / 100) );
+    display.display();
+  });
 
+  ArduinoOTA.onEnd([]() {
+    echo("Restart");
     display.clear();
-    display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
+    display.setFont(ArialMT_Plain_10);
+    display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+    display.drawString(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, "Restart");
     display.display();
   });
 
   server.begin();
+  server.setNoDelay(true);
+
 }
 
 void loop() {
+  ArduinoOTA.handle();
 
-  server.handleClient();
+  handleTelnet();
+}
 
-  // clear the display
-  display.clear();
+void handleTelnet() {
 
-  HTTPClient http;
-
-  // Make a HTTP request:
-  http.begin("http://192.168.88.246:81/temp.php");
-
-  int httpCode = http.GET();
-
-  if (httpCode > 0) {
-    if (httpCode == HTTP_CODE_OK) {
-      String payload = http.getString();
-      display.setTextAlignment(TEXT_ALIGN_LEFT);
-      display.setFont(ArialMT_Plain_16);
-      display.drawString(0, 0, payload);
-
-      display.display();
+  uint8_t i;
+  //check if there are any new clients
+  if (server.hasClient()) {
+    for (i = 0; i < MAX_SRV_CLIENTS; i++) {
+      //find free/disconnected spot
+      if (!serverClients[i] || !serverClients[i].connected()) {
+        if (serverClients[i]) serverClients[i].stop();
+        serverClients[i] = server.available();
+        continue;
+      }
     }
-  } else {
-    display.setTextAlignment(TEXT_ALIGN_LEFT);
-    display.setFont(ArialMT_Plain_10);
-    display.drawString(0, 0, http.errorToString(httpCode).c_str());
-
-    display.display();
+    //no free/disconnected spot so reject
+    WiFiClient serverClient = server.available();
+    serverClient.stop();
   }
 
-  http.end();
+  //check clients for data
+  for (i = 0; i < MAX_SRV_CLIENTS; i++) {
+    if (serverClients[i] && serverClients[i].connected()) {
+      if (serverClients[i].available()) {
+        while (serverClients[i].available()) {
+          String command = serverClients[i].readStringUntil('\n');
+          String response = handleCommand(command);
 
-  delay(1000);
+          serverClients[i].println(response);
+        }
+
+
+        delay(2000);
+      }
+    }
+  }
+
+}
+
+String handleCommand(String text) {
+  String response = "unknown command: " + text;
+
+  if ( text.indexOf("help") == 0) {
+    response = "help";
+  } else if (text.indexOf("html24") == 0) {
+    text.replace("html24","");
+    echo24(text);
+    response = "ok";
+  } else if (text.indexOf("html16") == 0) {
+    text.replace("html16","");
+    echo16(text);
+    response = "ok";
+  }  else if (text.indexOf("html") == 0) {
+    text.replace("html","");
+    echo(text);
+    response = "ok";
+  }
+  return response;
+}
+
+void echo(String text) {
+  text.replace("<br>", "\n");
+  display.clear();
+  display.setFont(ArialMT_Plain_10);
+  display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+  display.drawString(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, text);
+  display.display();
+}
+
+void echo16(String text) {
+  text.replace("<br>", "\n");
+  display.clear();
+  display.setFont(ArialMT_Plain_16);
+  display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+  display.drawString(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, text);
+  display.display();
+}
+
+void echo24(String text) {
+  text.replace("<br>", "\n");
+  display.clear();
+  display.setFont(ArialMT_Plain_24);
+  display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+  display.drawString(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, text);
+  display.display();
 }
