@@ -1,0 +1,180 @@
+<html>
+<head>
+</head>
+<body>
+<script>
+    window.onload = function() {
+        window.x = document.getElementById("map").clientWidth / 2;
+        window.y = document.getElementById("map").clientHeight / 2;
+
+        document.getElementById("nana").setAttribute('transform', 'translate(' + window.x + ',' + window.y + ')');
+        document.getElementById("control").setAttribute('transform', 'translate(' + (document.getElementById("map").clientWidth -200)+ ',' +  (document.getElementById("map").clientHeight-100) + ')');
+
+        window.nana_r = 12;
+
+        //Скорость см/секунду
+        window.speed = 65;
+
+        window.t_prev = 0;
+
+        window.ajax = function (url) {
+            xhr = new XMLHttpRequest();
+            xhr.open('GET', "http://192.168.88.234/" + url, true);
+            xhr.send();
+        };
+        document.onkeydown = function (e) {
+            window.ajax(e.keyCode);
+        }
+
+        var socket = new WebSocket("ws://nana.com:81");
+
+        socket.onopen = function () {
+            console.log("Соединение установлено.");
+        };
+
+        socket.onclose = function (event) {
+            document.getElementById("debug").innerText = "Нана ушел.";
+        };
+
+        socket.onmessage = function (event) {
+            document.getElementById("debug").innerText = event.data;
+
+            try {
+                var d = JSON.parse(event.data);
+
+                if (window.t_prev) {
+                    var dt = d.t / 1000 - window.t_prev;
+
+                    //Минус, потому что svg координаты перевернуты
+                    window.x = window.x - (window.speed * d.speed * dt * Math.cos(d.w * Math.PI / 180));
+                    window.y = window.y - (window.speed * d.speed * dt * Math.sin(d.w * Math.PI / 180));
+
+                    document.getElementById("nana").setAttribute('transform', 'translate(' + window.x + ',' + window.y + ') rotate(' + d.w + ')');
+
+                    //Относительные координаты препятствия
+                    var dxo = (d.dist_front + window.nana_r) * Math.cos(d.w * Math.PI / 180);
+                    var dyo = (d.dist_front + window.nana_r) * Math.sin(d.w * Math.PI / 180);
+
+                    //Абсолютные координаты препятствия
+                    var xo = parseInt(window.x - dxo);
+                    var yo = parseInt(window.y - dyo)
+
+                    document.getElementById("sensor").setAttribute("x2", -d.dist_front);
+
+                    //Нет ложных срабатываний на расстоянии <60 см
+                    if (d.dist_front < 60) {
+                        var el_id = "obstacle_" + xo + "_" + yo;
+                        if (!document.getElementById(el_id)) {
+                            var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                            circle.setAttributeNS(null, "id", el_id);
+                            circle.setAttributeNS(null, "cx", xo);
+                            circle.setAttributeNS(null, "cy", yo);
+                            circle.setAttributeNS(null, "r", 1);
+                            circle.setAttributeNS(null, "fill", "red");
+                            circle.setAttributeNS(null, "stroke", "none");
+
+                            document.getElementById("map").appendChild(circle);
+                        }
+                    }
+
+                }
+
+                window.t_prev = d.t / 1000;
+
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+        socket.onerror = function (error) {
+
+        };
+    }
+</script>
+
+<svg id="map" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+     style="border: 1px solid black">
+    <style>
+        #nana {
+            fill-opacity: 0.5;
+            stroke-width: 1;
+            fill: yellow;
+            stroke: #000000;
+        }
+
+        line {
+            stroke: #000000;
+        }
+    </style>
+
+    <g>
+        <text id="debug" x="20" y="10">
+            <tspan dy="1em">t:
+                <tspan id="t">0</tspan>
+            </tspan>
+            <tspan x=20 dy="1em">V:
+                <tspan id="V">0</tspan>
+            </tspan>
+            <tspan x="20" dy="1em">W:
+                <tspan id="W">0</tspan>
+            </tspan>
+            <tspan x="20" dy="1em">dist_front:
+                <tspan id="dist_front">0</tspan>
+            </tspan>
+        </text>
+    </g>
+
+    <rect id="auto"
+          x=95% y=5%
+          width="50" height="50"
+          rx="5" ry="5"
+          fill="green"
+          onmousedown='window.ajax("38");'
+            />
+    <g id="control" transform="translate(100,800)">
+        <rect id="up"
+              x=55 y=-55
+              width="50" height="50"
+              rx="5" ry="5"
+              fill="gray"
+              onmousedown='window.ajax("38");'
+              onmouseup='window.ajax("32");'
+                />
+
+        <rect id="left"
+              width="50" height="50"
+              rx="5" ry="5"
+              fill="gray"
+              onmousedown='window.ajax("37");'
+              onmouseup='window.ajax("32");'
+                />
+        <rect id="down"
+              x=55 width="50"
+              height="50"
+              rx="5" ry="5"
+              fill="gray"
+              onmousedown='window.ajax("40");'
+              onmouseup='window.ajax("32");'
+                />
+        <rect id="right"
+              x=110 width="50"
+              height="50"
+              rx="5" ry="5"
+              fill="gray"
+              onmousedown='window.ajax("39");'
+              onmouseup='window.ajax("32");'
+                />
+    </g>
+    <g id="nana">
+        <circle cx="0" cy="0" r="12"/>
+        <line id="sensor" x1="0" y1="0" x2="320" y2="0"/>
+        <rect transform="rotate(90)" x="-8" y="-2.5" width="2" height="5"
+              style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)"/>
+        <rect transform="rotate(90)" x="6" y="-2.5" width="2" height="5"
+              style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)"/>
+    </g>
+</svg>
+
+</body>
+
+</html>
