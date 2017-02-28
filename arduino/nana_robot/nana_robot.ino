@@ -16,6 +16,9 @@
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
+#include "Adafruit_PWMServoDriver.h"
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
+
 #include "SSD1306.h"
 // Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c;
@@ -55,6 +58,9 @@ void setup()
 
   Wire.begin(1, 3);
   Wire.setClock(400000);
+
+  pwm.begin();
+  pwm.setPWMFreq(1600);
 
   pinMode(sonar_front_trig, OUTPUT);
   pinMode(sonar_front_echo, INPUT);
@@ -191,12 +197,14 @@ void loop()
 
   wsDebug();
 
+//  pwm.setPWM(0, 0, 1 );/
+
   if (state == "auto") {
-//    if (!(obstacle_left() || obstacle_right() || dist_front() < 30)) {
-//      fwd();
-//    } else {
-//      select_course();
-//    }
+    //    if (!(obstacle_left() || obstacle_right() || dist_front() < 30)) {
+    //      fwd();
+    //    } else {
+    //      select_course();
+    //    }
 
     if (!(obstacle_left() || obstacle_right() || dist_front() < 30 )) {
       fwd();
