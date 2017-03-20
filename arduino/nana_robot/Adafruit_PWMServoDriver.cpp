@@ -17,22 +17,18 @@
 
 #include "Adafruit_PWMServoDriver.h"
 #include <Wire.h>
-#if defined(ARDUINO_SAM_DUE)
- #define WIRE Wire1
-#else
- #define WIRE Wire
-#endif
-
+#define WIRE Wire
 
 // Set to true to print some debug messages, or false to disable them.
-#define ENABLE_DEBUG_OUTPUT false
+#define ENABLE_DEBUG_OUTPUT true
 
 Adafruit_PWMServoDriver::Adafruit_PWMServoDriver(uint8_t addr) {
   _i2caddr = addr;
 }
 
 void Adafruit_PWMServoDriver::begin(void) {
- WIRE.begin();
+ WIRE.begin(4,5);
+ WIRE.setClock(400000);
  reset();
 }
 

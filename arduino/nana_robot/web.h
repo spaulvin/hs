@@ -1,7 +1,5 @@
 ESP8266WebServer web_server(80);
 
-String state = "stopped";
-
 void webServerSendFile(String filename) {
   File f = SPIFFS.open("/" + filename, "r");
   String data = f.readString();
@@ -13,28 +11,28 @@ void handleRoot() {
   webServerSendFile("index.html");
 }
 
-void set_angle(float target_angle) {
-
-  st();
-
-  float start_angle = getHeading();
-
-  unsigned long start = millis();
-
-  if (((int)(start_angle - target_angle + 360) % 360) > 180) {
-    turnaround_left();
-    while (((int)(start_angle - target_angle + 360) % 360) <= ((int)(getHeading() - target_angle + 360) % 360) && millis() - start <= 3000) {
-      delay(3);
-    }
-  } else {
-    turnaround_right();
-    while (((int)(start_angle - target_angle + 360) % 360) >= ((int)(getHeading() - target_angle + 360) % 360) && millis() - start <= 3000) {
-      delay(3);
-    }
-  }
-
-  st();
-}
+//void set_angle(float target_angle) {
+//
+//  nana.st();
+//
+//  float start_angle = getHeading();
+//
+//  unsigned long start = millis();
+//
+//  if (((int)(start_angle - target_angle + 360) % 360) > 180) {
+//    nana.turnaround_left();
+//    while (((int)(start_angle - target_angle + 360) % 360) <= ((int)(getHeading() - target_angle + 360) % 360) && millis() - start <= 3000) {
+//      delay(3);
+//    }
+//  } else {
+//    nana.turnaround_right();
+//    while (((int)(start_angle - target_angle + 360) % 360) >= ((int)(getHeading() - target_angle + 360) % 360) && millis() - start <= 3000) {
+//      delay(3);
+//    }
+//  }
+//
+//  nana.st();
+//}
 
 long dist_front() {
   long duration;
@@ -55,56 +53,62 @@ long dist_front() {
 
 float select_course() {
 
-  st();
+  nana.drive(0, 0);
 
-  float current = getHeading();
-  int target = ((int)current + 45) % 360;
+///
 
-  set_angle(target);
-
-  st();
+  nana.drive(0, 0);
 }
 
 void a() {
-  state = "auto";
+  nana.setDriveMode(1);
 }
 
 void left() {
-  state = "manual";
 
-  turnaround_left();
+
+  nana.drive(-4095, 4095);
 
   web_server.send(200, "text/html", "ok");
 }
 
 void right() {
-  state = "manual";
 
-  turnaround_right();
+
+  nana.drive(4095, -4095);
 
   web_server.send(200, "text/html", "ok");
 }
 
 void up() {
-  state = "manual";
 
-  fwd();
+  nana.drive(4095, 4095);
 
   web_server.send(200, "text/html", "ok");
 }
 
 void down() {
-  state = "manual";
 
-  backwards();
+
+  nana.drive(-4095, -4095);
 
   web_server.send(200, "text/html", "ok");
 }
 
 void space() {
-  st();
-  state = "stopped";
-  
+  nana.drive(0, 0);
+  nana.moving_mode = nana.WAITING;
+
+  web_server.send(200, "text/html", "ok");
+}
+
+void cleanEnable() {
+  nana.clean(true);
+  web_server.send(200, "text/html", "ok");
+}
+
+void cleanDisable() {
+  nana.clean(false);
   web_server.send(200, "text/html", "ok");
 }
 
@@ -119,6 +123,11 @@ void web_setup() {
   web_server.on("/40", down);
 
   web_server.on("/65", a);
+
+  web_server.on("/68", cleanDisable);
+
+  web_server.on("/69", cleanEnable);
+
 
   web_server.begin();
 }

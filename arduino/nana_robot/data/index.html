@@ -15,32 +15,52 @@
         //Скорость см/секунду
         window.speed = 65;
 
+        window.max = 0;
+        window.min = 0;
+
         window.t_prev = 0;
 
         window.ajax = function (url) {
             xhr = new XMLHttpRequest();
-            xhr.open('GET', "http://192.168.88.234/" + url, true);
+            xhr.open('GET', "/" + url, true);
             xhr.send();
         };
         document.onkeydown = function (e) {
             window.ajax(e.keyCode);
         }
 
-        var socket = new WebSocket("ws://nana.com:81");
+       var socket = new WebSocket("ws://" + location.host + ":81");
 
         socket.onopen = function () {
             console.log("Соединение установлено.");
         };
 
         socket.onclose = function (event) {
-            document.getElementById("debug").innerText = "Нана ушел.";
+            document.getElementById("debug").innerHTML = "Нана ушел.";
         };
 
         socket.onmessage = function (event) {
-            document.getElementById("debug").innerText = event.data;
-
             try {
                 var d = JSON.parse(event.data);
+
+                d.AcY += 540;
+
+                if (d.AcY > window.max){
+                    window.max = d.AcY;
+                    console.log(["max",d.AcY]);
+                }
+
+                if (d.AcY < window.min){
+                    window.min = d.AcY;
+                    console.log(["min",d.AcY]);
+                }
+
+                if (d.AcY > 700){
+                    window.max = d.AcY;
+                    console.log("-----------obs");
+                }
+
+                document.getElementById("debug").innerHTML = event.data;
 
                 if (window.t_prev) {
                     var dt = d.t / 1000 - window.t_prev;
@@ -51,31 +71,31 @@
 
                     document.getElementById("nana").setAttribute('transform', 'translate(' + window.x + ',' + window.y + ') rotate(' + d.w + ')');
 
-                    //Относительные координаты препятствия
-                    var dxo = (d.dist_front + window.nana_r) * Math.cos(d.w * Math.PI / 180);
-                    var dyo = (d.dist_front + window.nana_r) * Math.sin(d.w * Math.PI / 180);
-
-                    //Абсолютные координаты препятствия
-                    var xo = parseInt(window.x - dxo);
-                    var yo = parseInt(window.y - dyo)
-
-                    document.getElementById("sensor").setAttribute("x2", -d.dist_front);
-
-                    //Нет ложных срабатываний на расстоянии <60 см
-                    if (d.dist_front < 60) {
-                        var el_id = "obstacle_" + xo + "_" + yo;
-                        if (!document.getElementById(el_id)) {
-                            var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                            circle.setAttributeNS(null, "id", el_id);
-                            circle.setAttributeNS(null, "cx", xo);
-                            circle.setAttributeNS(null, "cy", yo);
-                            circle.setAttributeNS(null, "r", 1);
-                            circle.setAttributeNS(null, "fill", "red");
-                            circle.setAttributeNS(null, "stroke", "none");
-
-                            document.getElementById("map").appendChild(circle);
-                        }
-                    }
+//                    //Относительные координаты препятствия
+//                    var dxo = (d.dist_front + window.nana_r) * Math.cos(d.w * Math.PI / 180);
+//                    var dyo = (d.dist_front + window.nana_r) * Math.sin(d.w * Math.PI / 180);
+//
+//                    //Абсолютные координаты препятствия
+//                    var xo = parseInt(window.x - dxo);
+//                    var yo = parseInt(window.y - dyo)
+//
+//                    document.getElementById("sensor").setAttribute("x2", -d.dist_front);
+//
+//                    //Нет ложных срабатываний на расстоянии <60 см
+//                    if (d.dist_front < 60) {
+//                        var el_id = "obstacle_" + xo + "_" + yo;
+//                        if (!document.getElementById(el_id)) {
+//                            var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+//                            circle.setAttributeNS(null, "id", el_id);
+//                            circle.setAttributeNS(null, "cx", xo);
+//                            circle.setAttributeNS(null, "cy", yo);
+//                            circle.setAttributeNS(null, "r", 1);
+//                            circle.setAttributeNS(null, "fill", "red");
+//                            circle.setAttributeNS(null, "stroke", "none");
+//
+//                            document.getElementById("map").appendChild(circle);
+//                        }
+//                    }
 
                 }
 
@@ -108,20 +128,11 @@
     </style>
 
     <g>
-        <text id="debug" x="20" y="10">
-            <tspan dy="1em">t:
-                <tspan id="t">0</tspan>
-            </tspan>
-            <tspan x=20 dy="1em">V:
-                <tspan id="V">0</tspan>
-            </tspan>
-            <tspan x="20" dy="1em">W:
-                <tspan id="W">0</tspan>
-            </tspan>
-            <tspan x="20" dy="1em">dist_front:
-                <tspan id="dist_front">0</tspan>
+        <text x="20" y="10">
+            <tspan id="debug" dy="1em">Ожидаем НаНа...
             </tspan>
         </text>
+
     </g>
 
     <rect id="auto"

@@ -1,3 +1,13 @@
+//TX0                       RST
+//RX0                       ADC
+//GPIO5 (i2c sck)            EN
+//GPIO4 (i2c sda)           GPIO16     right bumber
+//GPIO0                     GPIO14     left bumber
+//GPIO2                     GPIO12     sensor button
+//GPI15  |                  GPIO13
+//GND    |                  VCC
+
+
 //For esp8266 12f set flash size 4m and 1m spiffs/
 
 #include <Wire.h>
@@ -22,33 +32,36 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
 #include "SSD1306.h"
 // Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c;
-const int SDA_PIN = 1;
-const int SDC_PIN = 3;
+const int SDA_PIN = 4;
+const int SDC_PIN = 5;
+
+SSD1306  display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+
+void echo(String text) {
+  display.clear();
+  display.setFont(ArialMT_Plain_16);
+  display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+  display.drawString(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2 - 10, text);
+  display.display();
+}
+
+//Бампер
+const int bumper_pin = 16;
+
+#include "NANA.h"
+
+NANA nana;
 
 const int sonar_front_trig = 13;
 const int sonar_front_echo = 12;
 
-//Компас
-#include "HMC5883L.h"
-
-//Двигатели
-#include "L298N.h"
-
 #include "web.h"
 
-SSD1306  display(I2C_DISPLAY_ADDRESS, SDA_PIN, SDC_PIN);
+#include "MPU6050.h"
 
 const char* ssid = "dir300";
 const char* ap_ssid = "NaNa";
 const char* password = "o2bukabaka";
-
-//Ик датчкики препятствия
-const int ir_left = 14;
-const int ir_right = 16;
-
-
-//Для позиционирования
-unsigned long t = 0;
 
 void setup()
 {
@@ -56,11 +69,13 @@ void setup()
 
   SPIFFS.begin();
 
-  Wire.begin(1, 3);
+  Wire.begin(SDA_PIN, SDC_PIN);
   Wire.setClock(400000);
 
   pwm.begin();
   pwm.setPWMFreq(1600);
+
+  nana.setup();
 
   pinMode(sonar_front_trig, OUTPUT);
   pinMode(sonar_front_echo, INPUT);
@@ -95,16 +110,6 @@ void setup()
   });
 
   ArduinoOTA.begin();
-  //Для консоли через телнет
-  //  ArduinoOTA.setPassword((const char *)"123");/
-
-  pinMode (IN4, OUTPUT);
-  pinMode (IN5, OUTPUT);
-  pinMode (IN6, OUTPUT);
-  pinMode (IN7, OUTPUT);
-
-  pinMode(ir_left, INPUT);
-  pinMode(ir_right, INPUT);
 
   web_setup();
 
@@ -113,7 +118,11 @@ void setup()
   webSocket.begin();
   webSocket.onEvent(webSocketEvent);
 
+  echo("NaNa v1");
 
+  pinMode(A0, INPUT);
+
+  nana.setDriveMode(1);
 }
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) {
@@ -151,42 +160,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
 
 }
 
-void echo(String text) {
-  display.clear();
-  display.setFont(ArialMT_Plain_16);
-  display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
-  display.drawString(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2 - 10, text);
-  display.display();
-}
-
-boolean obstacle_left() {
-  return digitalRead(ir_left) == HIGH;
-}
-
-boolean obstacle_right() {
-  return digitalRead(ir_right) == HIGH;
-}
-
-void wsDebug() {
-  int speed = getSpeed();
-  float w = getHeading();
-
-  sensors_event_t event;
-  mag.getEvent(&event);
-
-  String debug = "{\n";
-  debug += "\"t\": " + String(millis()) + ",\n";
-  debug += "\"w\": " + String(w) + ",\n";
-  debug += "\"mag_x\": " + String(event.magnetic.x) + ",\n";
-  debug += "\"mag_y\": " + String(event.magnetic.y) + ",\n";
-  debug += "\"speed\": " + String(speed) + ",\n";
-  debug += "\"dist_front\": " + String(dist_front()) + "\n";
-  debug += "}";
-
-
-  webSocket.broadcastTXT(debug);
-}
-
 void loop()
 {
   ArduinoOTA.handle();
@@ -195,24 +168,6 @@ void loop()
 
   webSocket.loop();
 
-  wsDebug();
-
-//  pwm.setPWM(0, 0, 1 );/
-
-  if (state == "auto") {
-    //    if (!(obstacle_left() || obstacle_right() || dist_front() < 30)) {
-    //      fwd();
-    //    } else {
-    //      select_course();
-    //    }
-
-    if (!(obstacle_left() || obstacle_right() || dist_front() < 30 )) {
-      fwd();
-    } else {
-      backwards();
-      delay(100);
-      select_course();
-    }
-  }
+  nana.loop();
 
 }
