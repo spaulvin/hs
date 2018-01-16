@@ -1,6 +1,9 @@
 #Mediatomb
 
-Медиасервер, отдача медиафайлов по dlna
+Медиасервер, отдача медиа
+rsync -avzp --exclude=.data /home/paul/PhpstormProjects/HomeServer/ root@192.168.88.249:/opt/docker/Homeserver
+
+файлов по dlna
 
 #db
 
@@ -17,3 +20,4 @@
 #nginx
 
 #php
+

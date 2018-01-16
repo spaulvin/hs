@@ -10,7 +10,7 @@
       </accounts>
     </ui>
     <pc-directory upnp-hide="yes"/>
-    <name>VAIO</name>
+    <name>GARAGE</name>
     <udn>uuid:1d9c74bd-7caf-44e9-a6c1-e7f31a474df4</udn>
     <home>/home</home>
     <webroot>/usr/share/mediatomb/web</webroot>
@@ -29,7 +29,7 @@
     <custom-http-headers>
       <add header="transferMode.dlna.org: Streaming"/>
       <add header="contentFeatures.dlna.org: DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=017000 00000000000000000000000000"/>
-    </custom-http-headers>W
+    </custom-http-headers>
     <extended-runtime-options>
       <ffmpegthumbnailer enabled="yes">
         <thumbnail-size>128</thumbnail-size>
@@ -121,7 +121,7 @@
         <first-resource>yes</first-resource>
         <accept-ogg-theora>yes</accept-ogg-theora>
         <agent command="ffmpeg" arguments="-y -i %in -vcodec mpeg2video -acodec mp2 -qscale 3 -f mpegts %out"/>
-        <buffer size="1024" chunk-size="1024" fill-size="1024"/>
+        <buffer size="1048576" chunk-size="1048576" fill-size="1048576"/>
       </profile>
       <profile name="overlay" enabled="yes" type="external">
         <mimetype>video/mpeg</mimetype>

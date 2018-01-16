@@ -6,14 +6,14 @@ services:
     environment:
       - DISPLAY = :0.0
     volumes:
-      - /home/paul/Videos:/home
-      - ./.data:/var/lib/mediatomb
+      - /mnt/sda3/public/:/home
+      - ./.data/mediatomb:/var/lib/mediatomb
       - ./etc/mediatomb/config.xml:/etc/mediatomb/config.xml
       - ./overlay.sh:/usr/local/bin/overlay.sh
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /home/paul/.Xauthority:/root/.Xauthority
-    volumes_from:
-      - db
+    command: /usr/bin/mediatomb -c /etc/mediatomb/config.xml -i 192.168.88.249
+    depends_on:
+      - "db"
+    restart: always
 
 
   db:
@@ -25,13 +25,15 @@ services:
       - MYSQL_USER=mediatomb
       - MYSQL_PASSWORD=pwgen
     volumes:
-      - .data/:/var/lib/mysql
+      - .data/db:/var/lib/mysql
+    restart: always
 
   zabbix:
     image: monitoringartist/zabbix-xxl:latest
 
     ports:
-      - 80:80
+      - 81:80
+      - 10051:10051
 
     environment:
       - ZS_DBHost=zabbix.db
@@ -39,29 +41,36 @@ services:
       - ZS_DBPassword=my_password
       - XXL_zapix=true
       - XXL_grapher=true
+      - ZS_AlertScriptsPath=/etc/zabbix/alertscripts
 
     links:
       - zabbix-db:zabbix.db
 
     volumes:
-      -  ./etc/zabbix_externalscripts:/usr/local/share/zabbix/externalscripts
+      - /etc/localtime:/etc/localtime:ro
+      - ./etc/zabbix/alertscripts:/etc/zabbix/alertscripts
+    restart: always
 
   zabbix-db:
     image: monitoringartist/zabbix-db-mariadb
     environment:
       - MARIADB_USER=zabbix
       - MARIADB_PASS=my_password
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
 
   nginx:
     image: nginx:latest
     ports:
-      - 81:80
+      - 80:80
     volumes:
       - ./etc/nginx/sites-enabled/default:/etc/nginx/conf.d/default.conf
     volumes_from:
       - php
     links:
       - php
+    restart: always
 
   php:
     image: php:fpm-alpine
@@ -71,6 +80,8 @@ services:
     environment:
       - TZ=Europe/Kiev
 
+    restart: always
+
   transmission:
     build: docker/transmission
     volumes:
@@ -78,3 +89,20 @@ services:
     volumes_from:
       - mediatomb
     network_mode: host
+    restart: always
+
+  ivideon:
+    build: docker/ivideon
+    volumes:
+      - ./etc/ivideon/videoserverd.config:/opt/ivideon/ivideon-server/videoserverd.config
+      - .data/ivideon:/opt/ivideon/Video
+    network_mode: host
+    restart: always
+
+  nut:
+    build: docker/nut
+    volumes:
+      - /dev/ttyUSB3:/dev/ttyUSB0
+      - ./etc/nut/ups.conf:/etc/nut/ups.conf
+    command: bash
+    tty: true

@@ -1,45 +1,92 @@
 [
     {
+        "name": "jalder/upnp",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/jalder/UPnP.git",
+            "reference": "ce5db6b69420780038a9158ba65cfad9aac5e248"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/jalder/UPnP/zipball/ce5db6b69420780038a9158ba65cfad9aac5e248",
+            "reference": "ce5db6b69420780038a9158ba65cfad9aac5e248",
+            "shasum": ""
+        },
+        "require-dev": {
+            "phpunit/phpunit": "4.1.*"
+        },
+        "time": "2016-12-04 21:22:02",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "jalder\\Upnp\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "John Alder",
+                "email": "jack@jalder.com"
+            }
+        ],
+        "description": "UPnP utilities for PHP applications",
+        "keywords": [
+            "Roku",
+            "chromecast",
+            "kodi",
+            "ssdp",
+            "upnp",
+            "xbmc"
+        ]
+    },
+    {
         "name": "gemorroj/m3u-parser",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/Gemorroj/M3uParser.git",
-            "reference": "731d7933a74097285e449b978e0839c24c3b0563"
+            "reference": "36c2ed2c10ce6ad140ea7cdaedba6f602ba7ce89"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Gemorroj/M3uParser/zipball/731d7933a74097285e449b978e0839c24c3b0563",
-            "reference": "731d7933a74097285e449b978e0839c24c3b0563",
+            "url": "https://api.github.com/repos/Gemorroj/M3uParser/zipball/36c2ed2c10ce6ad140ea7cdaedba6f602ba7ce89",
+            "reference": "36c2ed2c10ce6ad140ea7cdaedba6f602ba7ce89",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.0"
+            "php": ">=5.6"
         },
         "require-dev": {
-            "phpunit/phpunit": "~4.8|~5.0"
+            "phpunit/phpunit": "^5.7"
         },
-        "time": "2016-12-25 11:52:42",
+        "time": "2017-06-21 12:05:49",
         "type": "library",
         "installation-source": "source",
         "autoload": {
             "psr-4": {
-                "M3uParser\\": "src/M3uParser"
+                "M3uParser\\": "src/"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "GPLv3"
+            "LGPL-3.0"
         ],
         "authors": [
             {
                 "name": "Gemorroj"
             }
         ],
-        "description": "m3u playlist parser",
+        "description": "m3u playlist parser/generator",
         "keywords": [
             "m3u",
+            "m3u8",
             "playlist"
         ]
     }

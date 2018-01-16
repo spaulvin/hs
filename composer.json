@@ -1,5 +1,6 @@
 {
   "require": {
-    "gemorroj/m3u-parser": "dev-master"
+    "gemorroj/m3u-parser": "dev-master",
+    "jalder/upnp": "dev-master"
   }
 }

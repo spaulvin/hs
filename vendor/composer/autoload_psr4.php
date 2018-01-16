@@ -6,5 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'M3uParser\\' => array($vendorDir . '/gemorroj/m3u-parser/src/M3uParser'),
+    'jalder\\Upnp\\' => array($vendorDir . '/jalder/upnp/src'),
+    'M3uParser\\' => array($vendorDir . '/gemorroj/m3u-parser/src'),
 );
