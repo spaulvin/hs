@@ -10,7 +10,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/jalder/UPnP/zipball/ce5db6b69420780038a9158ba65cfad9aac5e248",
+            "url": "https://api.github.com/repos/jalder/UPnP/zipball/7559815f0ef16b6e96bc8be59a08bf5a464523ef",
             "reference": "ce5db6b69420780038a9158ba65cfad9aac5e248",
             "shasum": ""
         },
@@ -56,7 +56,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Gemorroj/M3uParser/zipball/36c2ed2c10ce6ad140ea7cdaedba6f602ba7ce89",
+            "url": "https://api.github.com/repos/Gemorroj/M3uParser/zipball/69ee72fbd006bb7b58ab45c1a54312a84b09f3fb",
             "reference": "36c2ed2c10ce6ad140ea7cdaedba6f602ba7ce89",
             "shasum": ""
         },
@@ -88,6 +88,65 @@
             "m3u",
             "m3u8",
             "playlist"
+        ]
+    },
+    {
+        "name": "php-curl-class/php-curl-class",
+        "version": "8.0.0",
+        "version_normalized": "8.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-curl-class/php-curl-class.git",
+            "reference": "dc8282d086362d946520781c8908e0b084f01438"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-curl-class/php-curl-class/zipball/dc8282d086362d946520781c8908e0b084f01438",
+            "reference": "dc8282d086362d946520781c8908e0b084f01438",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "*",
+            "squizlabs/php_codesniffer": "*"
+        },
+        "time": "2017-11-02 06:07:25",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Curl\\": "src/Curl/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Unlicense"
+        ],
+        "authors": [
+            {
+                "name": "Zach Borboa"
+            }
+        ],
+        "description": "PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.",
+        "homepage": "https://github.com/php-curl-class/php-curl-class",
+        "keywords": [
+            "api",
+            "class",
+            "client",
+            "curl",
+            "framework",
+            "http",
+            "http client",
+            "json",
+            "php",
+            "requests",
+            "rest",
+            "restful",
+            "web service",
+            "xml"
         ]
     }
 ]

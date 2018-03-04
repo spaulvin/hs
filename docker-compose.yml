@@ -98,11 +98,3 @@ services:
       - .data/ivideon:/opt/ivideon/Video
     network_mode: host
     restart: always
-
-  nut:
-    build: docker/nut
-    volumes:
-      - /dev/ttyUSB3:/dev/ttyUSB0
-      - ./etc/nut/ups.conf:/etc/nut/ups.conf
-    command: bash
-    tty: true

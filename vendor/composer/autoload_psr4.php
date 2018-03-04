@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'jalder\\Upnp\\' => array($vendorDir . '/jalder/upnp/src'),
     'M3uParser\\' => array($vendorDir . '/gemorroj/m3u-parser/src'),
+    'Curl\\' => array($vendorDir . '/php-curl-class/php-curl-class/src/Curl'),
 );

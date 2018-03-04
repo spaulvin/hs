@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c76de28e7419d790e8928aaadea10c47",
-    "content-hash": "7d57625e0fe322e46a8ede525fe9dd7c",
+    "hash": "0b752dcf9c60a2a93be35d56b71e676c",
+    "content-hash": "07757bfc5c12418c30c4936a487e47d4",
     "packages": [
         {
             "name": "gemorroj/m3u-parser",
@@ -17,7 +17,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Gemorroj/M3uParser/zipball/36c2ed2c10ce6ad140ea7cdaedba6f602ba7ce89",
+                "url": "https://api.github.com/repos/Gemorroj/M3uParser/zipball/69ee72fbd006bb7b58ab45c1a54312a84b09f3fb",
                 "reference": "36c2ed2c10ce6ad140ea7cdaedba6f602ba7ce89",
                 "shasum": ""
             },
@@ -60,7 +60,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jalder/UPnP/zipball/ce5db6b69420780038a9158ba65cfad9aac5e248",
+                "url": "https://api.github.com/repos/jalder/UPnP/zipball/7559815f0ef16b6e96bc8be59a08bf5a464523ef",
                 "reference": "ce5db6b69420780038a9158ba65cfad9aac5e248",
                 "shasum": ""
             },
@@ -93,6 +93,63 @@
                 "xbmc"
             ],
             "time": "2016-12-04 21:22:02"
+        },
+        {
+            "name": "php-curl-class/php-curl-class",
+            "version": "8.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-curl-class/php-curl-class.git",
+                "reference": "dc8282d086362d946520781c8908e0b084f01438"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-curl-class/php-curl-class/zipball/dc8282d086362d946520781c8908e0b084f01438",
+                "reference": "dc8282d086362d946520781c8908e0b084f01438",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*",
+                "squizlabs/php_codesniffer": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Curl\\": "src/Curl/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Unlicense"
+            ],
+            "authors": [
+                {
+                    "name": "Zach Borboa"
+                }
+            ],
+            "description": "PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.",
+            "homepage": "https://github.com/php-curl-class/php-curl-class",
+            "keywords": [
+                "api",
+                "class",
+                "client",
+                "curl",
+                "framework",
+                "http",
+                "http client",
+                "json",
+                "php",
+                "requests",
+                "rest",
+                "restful",
+                "web service",
+                "xml"
+            ],
+            "time": "2017-11-02 06:07:25"
         }
     ],
     "packages-dev": [],

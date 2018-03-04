@@ -1,6 +1,7 @@
 {
   "require": {
     "gemorroj/m3u-parser": "dev-master",
-    "jalder/upnp": "dev-master"
+    "jalder/upnp": "dev-master",
+    "php-curl-class/php-curl-class": "^8.0"
   }
 }

@@ -23,7 +23,7 @@ bool timerTick = true;
 
 IPAddress zabbix(192, 168, 88, 249);
 
-const char* ssid     = "OpenWrt";
+const char* ssid     = "dir300";
 const char* password = "o2bukabaka";
 
 void setup(void) {
