@@ -98,3 +98,14 @@ services:
       - .data/ivideon:/opt/ivideon/Video
     network_mode: host
     restart: always
+
+  telegram-bot:
+    volumes:
+      - ./telegram-bot.js:/root/telegram-bot.js
+      - ./node_modules:/root/node_modules
+    image: node
+    tty: true
+    command: node /root/telegram-bot.js
+    links:
+      - zabbix-db:zabbix.db
+    restart: always

@@ -70,11 +70,7 @@ void send() {
     //Температура восприятия, зависит от влажности
     //  float hic = dht.computeHeatIndex(t, h, false);/
 
-    sendzabbix(t, sensor_num);
-    sensor_num++;
-
-    sendzabbix(h, sensor_num);
-
+    sendzabbix(t, h);
     timerTick = false;
   }
 }
@@ -84,16 +80,23 @@ void loop(void) {
   send();
 }
 
-void sendzabbix(float temp, int sensor_num)
+void sendzabbix(float temp,float humidity)
 {
   WiFiClient zbx_client;
   if (zbx_client.connect(zabbix, 10051))
   {
-    String msg = "{\"request\":\"agent data\",\"data\":[{\"host\":\"meteo\",\"key\":\"sensor";
-    msg += sensor_num;
-    msg += "\",\"value\":\"";
+    String msg = "{\"request\":\"agent data\",\"data\":[";
+    msg +="{\"host\":\"meteo\",\"key\":\"sensor";
+    msg += "0\",\"value\":\"";
     msg += temp;
-    msg += "\"}]}\r\n";
+    msg += "\"},";
+
+    msg +="{\"host\":\"meteo\",\"key\":\"sensor";
+    msg += "1\",\"value\":\"";
+    msg += humidity;
+    msg += "\"}";
+     
+    msg +="]}\r\n";
     Serial.println(msg);
     zbx_client.write(msg.c_str());
     delay(1);
